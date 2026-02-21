@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Редактирование статьи | Go блог</title>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+    <body>
+        <header>
+            <h1>Go блог - Редактирование статьи</h1>
+            <nav>
+                <a href="/">Домашняя</a>
+                <span id="auth-section">
+                    <a href="/login.html" id="login-link" style="display: none"
+                        >Войти</a
+                    >
+                    <a href="/dashboard.html" id="dashboard-link"
+                        >Панель управления</a
+                    >
+                    <a href="#" id="logout-link">Выйти</a>
+                </span>
+            </nav>
+        </header>
+
+        <main id="article">
+            <form id="article-form">
+                <div class="form-group">
+                    <label for="title">Заголовок:</label>
+                    <input type="text" id="title" name="title" required />
+                </div>
+                <div class="form-group">
+                    <label for="content">Содержание:</label>
+                    <textarea
+                        id="content"
+                        name="content"
+                        rows="10"
+                        required
+                    ></textarea>
+                </div>
+                <button type="submit" id="save-btn">Сохранить</button>
+                <button
+                    type="button"
+                    id="delete-btn"
+                    style="background-color: #ff4444"
+                >
+                    Удалить статью
+                </button>
+            </form>
+        </main>
+
+        <script src="/js/auth.js"></script>
+        <script src="/js/edit-article.js"></script>
+    </body>
+</html>

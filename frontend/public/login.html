@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Вход | Go блог</title>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+    <body>
+        <header>
+            <h1>Go блог - Вход</h1>
+            <nav>
+                <a href="/">Домашняя</a>
+                <span id="auth-section">
+                    <a href="/login.html" id="login-link">Войти</a>
+                    <a
+                        href="/dashboard.html"
+                        id="dashboard-link"
+                        style="display: none"
+                        >Панель управления</a
+                    >
+                    <a href="#" id="logout-link" style="display: none">Выйти</a>
+                </span>
+            </nav>
+        </header>
+
+        <main id="content">
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Имя пользователя:</label>
+                    <input type="text" id="username" name="username" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                    />
+                </div>
+                <button type="submit">Войти</button>
+                <div
+                    id="error-message"
+                    style="color: red; margin-top: 10px"
+                ></div>
+            </form>
+        </main>
+
+        <script src="/js/auth.js"></script>
+        <script src="/js/login.js"></script>
+    </body>
+</html>

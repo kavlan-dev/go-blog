@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Панель управления | Go блог</title>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+    <body>
+        <header>
+            <h1>Go блог - Панель управления</h1>
+            <nav>
+                <a href="/">Домашняя</a>
+                <span id="auth-section">
+                    <a href="/login.html" id="login-link" style="display: none"
+                        >Войти</a
+                    >
+                    <a href="/dashboard.html" id="dashboard-link"
+                        >Панель управления</a
+                    >
+                    <a href="#" id="logout-link">Выйти</a>
+                </span>
+            </nav>
+        </header>
+
+        <main id="content">
+            <div class="dashboard-controls">
+                <button id="add-article-btn">Добавить новую статью</button>
+            </div>
+            <div id="articles-list">
+                <h2>Загрузка статей...</h2>
+            </div>
+        </main>
+
+        <script src="/js/auth.js"></script>
+        <script src="/js/dashboard.js"></script>
+    </body>
+</html>
