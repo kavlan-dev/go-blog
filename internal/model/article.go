@@ -19,3 +19,17 @@ type ArticleUpdateRequest struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
 }
+
+func (a ArticleCreateRequest) ToArticle() Article {
+	return Article{
+		Title:   a.Title,
+		Content: a.Content,
+	}
+}
+
+func (a ArticleUpdateRequest) ToArticle() Article {
+	return Article{
+		Title:   a.Title,
+		Content: a.Content,
+	}
+}

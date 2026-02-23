@@ -10,17 +10,17 @@ import (
 )
 
 type userService interface {
-	AuthenticateUser(authUser *model.User) (*model.User, error)
-	RegisterUser(newUser *model.User) error
+	AuthenticateUser(authUser model.UserRequest) (model.User, error)
+	RegisterUser(newUser model.UserRequest) error
 }
 
 type userHandler struct {
-	service userService
-	log     *zap.SugaredLogger
+	s   userService
+	log *zap.SugaredLogger
 }
 
-func NewUserHandler(service userService, log *zap.SugaredLogger) *userHandler {
-	return &userHandler{service: service, log: log}
+func NewUserHandler(s userService, log *zap.SugaredLogger) *userHandler {
+	return &userHandler{s: s, log: log}
 }
 
 func (h *userHandler) Register(c *gin.Context) {
@@ -33,12 +33,7 @@ func (h *userHandler) Register(c *gin.Context) {
 		return
 	}
 
-	newUser := model.User{
-		Username: req.Username,
-		Password: req.Password,
-	}
-
-	if err := h.service.RegisterUser(&newUser); err != nil {
+	if err := h.s.RegisterUser(req); err != nil {
 		h.log.Errorf("Ошибка при создании пользователя: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "не удалось создать пользователя",
@@ -62,12 +57,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	newUser := model.User{
-		Username: req.Username,
-		Password: req.Password,
-	}
-
-	user, err := h.service.AuthenticateUser(&newUser)
+	user, err := h.s.AuthenticateUser(req)
 	if err != nil {
 		h.log.Errorf("Ошибка авторизации пользователя %s: %v", req.Username, err)
 		c.JSON(http.StatusUnauthorized, gin.H{

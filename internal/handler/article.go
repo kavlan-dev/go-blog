@@ -10,28 +10,28 @@ import (
 )
 
 type articleService interface {
-	AllArticles() ([]*model.Article, error)
-	ArticleById(id int) (*model.Article, error)
-	CreateArticle(newArticle *model.Article) error
-	UpdateArticle(id int, updateArticle *model.Article) error
+	AllArticles() ([]model.Article, error)
+	ArticleById(id int) (model.Article, error)
+	CreateArticle(newArticle model.ArticleCreateRequest) error
+	UpdateArticle(id int, updateArticle model.ArticleUpdateRequest) error
 	DeleteArticle(id int) error
 }
 
 type articleHandler struct {
-	service articleService
-	log     *zap.SugaredLogger
+	s   articleService
+	log *zap.SugaredLogger
 }
 
-func NewArticleHandler(service articleService, log *zap.SugaredLogger) *articleHandler {
-	return &articleHandler{service: service, log: log}
+func NewArticleHandler(s articleService, log *zap.SugaredLogger) *articleHandler {
+	return &articleHandler{s: s, log: log}
 }
 
-func (h *articleHandler) AllArticles(c *gin.Context) {
-	articles, err := h.service.AllArticles()
+func (h articleHandler) AllArticles(c *gin.Context) {
+	articles, err := h.s.AllArticles()
 	if err != nil {
 		h.log.Errorf("Ошибка получения всех статей: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Ошибка сервера",
+			"error": "ошибка сервера",
 		})
 		return
 	}
@@ -41,22 +41,22 @@ func (h *articleHandler) AllArticles(c *gin.Context) {
 	})
 }
 
-func (h *articleHandler) ArticleById(c *gin.Context) {
+func (h articleHandler) ArticleById(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		h.log.Errorf("Ошибка преобразования ID в число: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Неверный формат ID",
+			"error": "неверный формат ID",
 		})
 		return
 	}
 
-	article, err := h.service.ArticleById(id)
+	article, err := h.s.ArticleById(id)
 	if err != nil {
 		h.log.Errorf("Ошибка получения статьи по ID: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Ошибка сервера",
+			"error": "ошибка сервера",
 		})
 		return
 	}
@@ -66,42 +66,37 @@ func (h *articleHandler) ArticleById(c *gin.Context) {
 	})
 }
 
-func (h *articleHandler) CreateArticle(c *gin.Context) {
+func (h articleHandler) CreateArticle(c *gin.Context) {
 	var req model.ArticleCreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.log.Errorf("Ошибка создания статьи: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Неверный формат данных",
+			"error": "неверный формат данных",
 		})
 		return
 	}
 
-	newArticle := model.Article{
-		Title:   req.Title,
-		Content: req.Content,
-	}
-
-	err := h.service.CreateArticle(&newArticle)
+	err := h.s.CreateArticle(req)
 	if err != nil {
 		h.log.Errorf("Ошибка создания статьи: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Ошибка сервера",
+			"error": "ошибка сервера",
 		})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"article": newArticle,
+		"message": "статья успешно создана",
 	})
 }
 
-func (h *articleHandler) UpdateArticle(c *gin.Context) {
+func (h articleHandler) UpdateArticle(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		h.log.Errorf("Ошибка преобразования ID в число: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Неверный формат ID",
+			"error": "неверный формат ID",
 		})
 		return
 	}
@@ -110,51 +105,46 @@ func (h *articleHandler) UpdateArticle(c *gin.Context) {
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.log.Errorf("Ошибка обновления статьи: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Неверный формат данных",
+			"error": "неверный формат данных",
 		})
 		return
 	}
 
-	newArticle := model.Article{
-		Title:   req.Title,
-		Content: req.Content,
-	}
-
-	err = h.service.UpdateArticle(id, &newArticle)
+	err = h.s.UpdateArticle(id, req)
 	if err != nil {
 		h.log.Errorf("Ошибка обновления статьи: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Ошибка сервера",
+			"error": "ошибка сервера",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"article": newArticle,
+		"message": "статья успешно обновлена",
 	})
 }
 
-func (h *articleHandler) DeleteArticle(c *gin.Context) {
+func (h articleHandler) DeleteArticle(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		h.log.Errorf("Ошибка преобразования ID в число: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Неверный формат ID",
+			"error": "неверный формат ID",
 		})
 		return
 	}
 
-	err = h.service.DeleteArticle(id)
+	err = h.s.DeleteArticle(id)
 	if err != nil {
 		h.log.Errorf("Ошибка удаления статьи: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Ошибка сервера",
+			"error": "ошибка сервера",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Статья успешно удалена",
+		"message": "статья успешно удалена",
 	})
 }

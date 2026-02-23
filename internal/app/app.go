@@ -4,9 +4,10 @@ import (
 	"context"
 	"go-blog/internal/config"
 	"go-blog/internal/handler"
+	"go-blog/internal/repository"
+	"go-blog/internal/repository/postgres"
 	"go-blog/internal/router"
 	"go-blog/internal/service"
-	"go-blog/internal/storage/postgres"
 	"go-blog/internal/util"
 	"log"
 	"net/http"
@@ -27,15 +28,17 @@ func Run() {
 	}
 	defer logger.Sync()
 
-	db, err := postgres.NewStorage(cfg)
+	db, err := postgres.New(cfg)
 	if err != nil {
 		log.Fatalf("Ошибка инициализации базы данных: %v", err)
 	}
 
-	userService := service.NewUserService(db)
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
 	userHandler := handler.NewUserHandler(userService, logger)
 
-	articleService := service.NewArticleService(db)
+	articleRepository := repository.NewArticleRepository(db)
+	articleService := service.NewArticleService(articleRepository)
 	articleHandler := handler.NewArticleHandler(articleService, logger)
 
 	r, err := router.NewRouter(cfg, userHandler, articleHandler)

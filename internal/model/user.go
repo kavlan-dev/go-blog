@@ -13,7 +13,9 @@ type UserRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type UserResponse struct {
-	ID       uint   `json:"id"`
-	Username string `json:"username"`
+func (u UserRequest) ToUser() User {
+	return User{
+		Username: u.Username,
+		Password: u.Password,
+	}
 }
