@@ -10,8 +10,8 @@ import (
 )
 
 type userService interface {
-	AuthenticateUser(authUser model.UserRequest) (model.User, error)
-	RegisterUser(newUser model.UserRequest) error
+	AuthenticateUser(authUser *model.UserRequest) (*model.User, error)
+	RegisterUser(newUser *model.UserRequest) error
 }
 
 type userHandler struct {
@@ -33,7 +33,7 @@ func (h *userHandler) Register(c *gin.Context) {
 		return
 	}
 
-	if err := h.s.RegisterUser(req); err != nil {
+	if err := h.s.RegisterUser(&req); err != nil {
 		h.log.Errorf("Ошибка при создании пользователя: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "не удалось создать пользователя",
@@ -57,7 +57,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.s.AuthenticateUser(req)
+	user, err := h.s.AuthenticateUser(&req)
 	if err != nil {
 		h.log.Errorf("Ошибка авторизации пользователя %s: %v", req.Username, err)
 		c.JSON(http.StatusUnauthorized, gin.H{

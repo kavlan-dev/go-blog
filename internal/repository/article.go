@@ -14,7 +14,7 @@ func NewArticleRepository(db *gorm.DB) *articleRepository {
 	return &articleRepository{db: db}
 }
 
-func (s articleRepository) GetArticles() ([]model.Article, error) {
+func (s *articleRepository) GetArticles() ([]model.Article, error) {
 	var articles []model.Article
 	if err := s.db.Find(&articles).Error; err != nil {
 		return nil, err
@@ -23,20 +23,20 @@ func (s articleRepository) GetArticles() ([]model.Article, error) {
 	return articles, nil
 }
 
-func (s articleRepository) GetArticle(id int) (model.Article, error) {
+func (s *articleRepository) GetArticle(id int) (*model.Article, error) {
 	var article model.Article
 	if err := s.db.First(&article, id).Error; err != nil {
-		return model.Article{}, err
+		return nil, err
 	}
 
-	return article, nil
+	return &article, nil
 }
 
-func (s articleRepository) CreateArticle(newArticle model.Article) error {
+func (s *articleRepository) CreateArticle(newArticle *model.Article) error {
 	return s.db.Create(&newArticle).Error
 }
 
-func (s articleRepository) UpdateArticle(id int, updateArticle model.Article) error {
+func (s *articleRepository) UpdateArticle(id int, updateArticle *model.Article) error {
 	var article model.Article
 	if err := s.db.First(&article, id).Error; err != nil {
 		return err
@@ -49,7 +49,7 @@ func (s articleRepository) UpdateArticle(id int, updateArticle model.Article) er
 	return nil
 }
 
-func (s articleRepository) DeleteArticle(id int) error {
+func (s *articleRepository) DeleteArticle(id int) error {
 	var article model.Article
 	if err := s.db.First(&article, id).Error; err != nil {
 		return err

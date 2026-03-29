@@ -7,8 +7,8 @@ import (
 )
 
 type userRepository interface {
-	FindUserByUsername(username string) (model.User, error)
-	CreateUser(user model.User) error
+	FindUserByUsername(username string) (*model.User, error)
+	CreateUser(user *model.User) error
 }
 
 type userService struct {
@@ -19,20 +19,20 @@ func NewUserService(repo userRepository) *userService {
 	return &userService{repo: repo}
 }
 
-func (s userService) AuthenticateUser(authUser model.UserRequest) (model.User, error) {
+func (s *userService) AuthenticateUser(authUser *model.UserRequest) (*model.User, error) {
 	user, err := s.repo.FindUserByUsername(authUser.Username)
 	if err != nil {
-		return model.User{}, err
+		return nil, err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(authUser.Password)); err != nil {
-		return model.User{}, err
+		return nil, err
 	}
 
 	return user, nil
 }
 
-func (s userService) RegisterUser(newUser model.UserRequest) error {
+func (s *userService) RegisterUser(newUser *model.UserRequest) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func (s userService) RegisterUser(newUser model.UserRequest) error {
 
 	user := newUser.ToUser()
 
-	if err := s.repo.CreateUser(user); err != nil {
+	if err := s.repo.CreateUser(&user); err != nil {
 		return err
 	}
 
