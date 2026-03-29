@@ -4,10 +4,11 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/app
+COPY cmd/ cmd/
+COPY internal/ internal/
+RUN CGO_ENABLED=0 GOOS=linux go build -o app ./cmd/app
 
-FROM alpine AS final
+FROM alpine
 WORKDIR /app
 
 COPY --from=builder /app/app .
