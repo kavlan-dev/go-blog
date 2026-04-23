@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func Run() {
@@ -51,24 +52,25 @@ func Run() {
 		Handler: r,
 	}
 
-	logger.Info("Сервер запущен")
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
 	go func() {
-		<-sigChan
-		logger.Info("Остановка...")
-		cancel()
-		if err := srv.Shutdown(ctx); err != nil {
-			logger.Errorf("Ошибка остановки сервера %v:", err)
+		log.Println("Сервер запущен")
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Fatalln("Ошибка запуска сервера:", err)
 		}
 	}()
 
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logger.Fatalf("Ошибка запуска сервера: %v", err)
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+	<-stop
+	logger.Infoln("Остановка сервера...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Errorf("Ошибка graceful shutdown: %v", err)
+		return
 	}
+
+	logger.Infoln("Сервер успешно завершил работу")
 }
