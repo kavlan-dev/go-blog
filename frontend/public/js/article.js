@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const data = await response.json();
-    const article = data.article;
+    const article = data;
     const contentDiv = document.getElementById("article");
 
     if (!article) {

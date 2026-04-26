@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const data = await response.json();
-    const articles = data.articles || [];
+    const articles = data || [];
     const contentDiv = document.getElementById("articles");
 
     if (articles.length === 0) {

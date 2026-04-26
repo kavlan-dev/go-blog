@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Environment string // dev, prod
+	JWTSecret   string
 	CORS        []string
 	DB          databaseConfig
 }
@@ -20,16 +21,24 @@ type databaseConfig struct {
 }
 
 func InitConfig() (*Config, error) {
-	var config Config
-	config.Environment = envOrDefault("ENV", "prod")
-	config.CORS = strings.Split(envOrDefault("CORS", "*"), ",")
-	config.DB.Host = envOrDefault("DB_HOST", "db")
-	config.DB.User = envOrDefault("DB_USER", "")
-	config.DB.Password = envOrDefault("DB_PASSWORD", "")
-	config.DB.Name = envOrDefault("DB_NAME", "")
+	config := Config{
+		Environment: envOrDefault("ENV", "prod"),
+		JWTSecret:   envOrDefault("JWT_SECRET", ""),
+		CORS:        strings.Split(envOrDefault("CORS", "*"), ","),
+		DB: databaseConfig{
+			Host:     envOrDefault("DB_HOST", "localhost"),
+			User:     envOrDefault("DB_USER", ""),
+			Password: envOrDefault("DB_PASSWORD", ""),
+			Name:     envOrDefault("DB_NAME", ""),
+		},
+	}
 
 	if config.Environment != "dev" && config.Environment != "prod" {
 		return nil, fmt.Errorf("Не верно указано окружение %s", config.Environment)
+	}
+
+	if config.JWTSecret == "" {
+		return nil, fmt.Errorf("Не указан jwt")
 	}
 
 	if config.DB.Host == "" || config.DB.User == "" || config.DB.Password == "" || config.DB.Name == "" {

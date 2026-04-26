@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const data = await response.json();
-      const article = data.article;
+      const article = data;
 
       if (article) {
         titleInput.value = article.title;

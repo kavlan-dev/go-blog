@@ -26,7 +26,7 @@ async function loadArticles() {
     }
 
     const data = await response.json();
-    const articles = data.articles || [];
+    const articles = data || [];
     const articlesList = document.getElementById("articles-list");
 
     if (articles.length === 0) {

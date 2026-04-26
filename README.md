@@ -84,14 +84,14 @@ cp .env.example .env
 
 Отредактируйте `.env` файл, указав свои параметры для базы данных:
 
-```
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=go_blog
-DB_HOST=db
-DB_PORT=5432
+```bash
+ENV=dev #по умолчанию prod
+CORS=http://localhost:8000 #по умолчанию *
+DB_HOST=db #по умолчанию localhost
+DB_USER=myuser
+DB_PASSWORD=mypass
+DB_NAME=blogdb
 JWT_SECRET=your_jwt_secret
-ENVIRONMENT=dev
 ```
 
 ### 3. Запуск с помощью Docker
@@ -177,7 +177,7 @@ curl -X POST http://localhost:8080/api/admin/articles \
 
 - `DB_*` - параметры подключения к базе данных
 - `JWT_SECRET` - секретный ключ для генерации JWT токенов
-- `ENVIRONMENT` - окружение (dev/prod)
+- `ENV` - окружение (dev/prod)
 
 ## Тестирование
 

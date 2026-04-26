@@ -29,6 +29,8 @@ func Run() {
 	}
 	defer logger.Sync()
 
+	util.InitJWT(cfg.JWTSecret)
+
 	db, err := postgres.New(cfg)
 	if err != nil {
 		log.Fatalf("Ошибка инициализации базы данных: %v", err)
